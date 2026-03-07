@@ -1,4 +1,4 @@
-package com.zcshou.utils;
+package com.voidprajna.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -237,20 +237,43 @@ public class GoUtils {
     }
 
     // 提醒开启位置模拟的弹框
-    public static  void showDisableWifiDialog(Context context) {
+    // public static  void showDisableWifiDialog(Context context) {
+    //     new AlertDialog.Builder(context)
+    //             .setTitle("警告")
+    //             .setMessage("开启 WIFI 后（即使没有连接热点）将导致定位闪回真实位置。建议关闭 WIFI，使用移动流量进行游戏！")
+    //             .setPositiveButton("去关闭",(dialog, which) -> {
+    //                 try {
+    //                     Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+    //                     context.startActivity(intent);
+    //                 } catch (Exception e) {
+    //                     e.printStackTrace();
+    //                 }
+    //             })
+    //             .setNegativeButton("忽略",(dialog, which) -> {
+    //             })
+    //             .show();
+    // }
+
+    public static void showDisableWifiDialog(Context context) {
         new AlertDialog.Builder(context)
                 .setTitle("警告")
-                .setMessage("开启 WIFI 后（即使没有连接热点）将导致定位闪回真实位置。建议关闭 WIFI，使用移动流量进行游戏！")
-                .setPositiveButton("去关闭",(dialog, which) -> {
+                .setMessage("开启 WIFI 会导致定位闪回真实位置。")
+                .setPositiveButton("去关闭", (dialog, which) -> {
                     try {
-                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                        context.startActivity(intent);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            // Android 10+ 使用 Settings.Panel
+                            Intent intent = new Intent(Settings.Panel.ACTION_WIFI);
+                            context.startActivity(intent);
+                        } else {
+                            // Android 9 及以下跳转 WiFi 设置
+                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                            context.startActivity(intent);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 })
-                .setNegativeButton("忽略",(dialog, which) -> {
-                })
+                .setNegativeButton("忽略", (dialog, which) -> {})
                 .show();
     }
 

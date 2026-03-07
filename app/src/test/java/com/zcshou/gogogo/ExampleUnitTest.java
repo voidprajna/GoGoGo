@@ -1,4 +1,4 @@
-package com.zcshou.gogogo;
+package com.voidprajna.gogogo;
 
 import org.junit.Test;
 

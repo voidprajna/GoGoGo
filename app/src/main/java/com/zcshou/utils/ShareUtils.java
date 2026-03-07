@@ -1,4 +1,4 @@
-package com.zcshou.utils;
+package com.voidprajna.utils;
 
 import android.content.Context;
 import android.content.Intent;

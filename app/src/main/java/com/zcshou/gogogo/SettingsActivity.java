@@ -1,4 +1,4 @@
-package com.zcshou.gogogo;
+package com.voidprajna.gogogo;
 
 import android.os.Bundle;
 import android.view.MenuItem;

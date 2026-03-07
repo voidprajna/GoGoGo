@@ -1,4 +1,4 @@
-package com.zcshou.gogogo;
+package com.voidprajna.gogogo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.zcshou.utils.GoUtils;
+import com.voidprajna.utils.GoUtils;
 
 import java.util.ArrayList;
 

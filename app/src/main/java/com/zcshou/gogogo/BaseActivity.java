@@ -1,4 +1,4 @@
-package com.zcshou.gogogo;
+package com.voidprajna.gogogo;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

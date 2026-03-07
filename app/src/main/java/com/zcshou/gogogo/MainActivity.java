@@ -1,4 +1,4 @@
-package com.zcshou.gogogo;
+package com.voidprajna.gogogo;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -91,12 +91,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.zcshou.service.ServiceGo;
-import com.zcshou.database.DataBaseHistoryLocation;
-import com.zcshou.database.DataBaseHistorySearch;
-import com.zcshou.utils.ShareUtils;
-import com.zcshou.utils.GoUtils;
-import com.zcshou.utils.MapUtils;
+import com.voidprajna.service.ServiceGo;
+import com.voidprajna.database.DataBaseHistoryLocation;
+import com.voidprajna.database.DataBaseHistorySearch;
+import com.voidprajna.utils.ShareUtils;
+import com.voidprajna.utils.GoUtils;
+import com.voidprajna.utils.MapUtils;
 
 import com.elvishew.xlog.XLog;
 
@@ -1164,7 +1164,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
     }
 
     private void checkUpdateVersion(boolean result) {
-        String mapApiUrl = "https://api.github.com/repos/zcshou/gogogo/releases/latest";
+        String mapApiUrl = "https://api.github.com/repos/voidprajna/gogogo/releases/latest";
 
         okhttp3.Request request = new okhttp3.Request.Builder().url(mapApiUrl).get().build();
         final Call call = mOkHttpClient.newCall(request);
