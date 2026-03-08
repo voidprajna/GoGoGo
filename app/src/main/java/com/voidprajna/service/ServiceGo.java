@@ -170,7 +170,6 @@ public class ServiceGo extends Service {
                 mCurAlt = alt;
             }
         });
-        mJoyStick.show();
     }
 
     private void initGoLocation() {
