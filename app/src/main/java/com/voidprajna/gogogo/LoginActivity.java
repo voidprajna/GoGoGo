@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.voidprajna.utils.LogtoManager;
 
 import io.logto.sdk.android.LogtoClient;
-import io.logto.sdk.android.type.IdTokenClaims;
 
 public class LoginActivity extends BaseActivity {
     private LogtoManager logtoManager;
@@ -74,15 +73,30 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void saveUserInfo(IdTokenClaims claims) {
+    private void saveUserInfo(Object claims) {
         if (claims != null) {
             logtoManager.setLoggedIn(true);
-            logtoManager.setUserId(claims.getSub());
-            if (claims.getName() != null) {
-                logtoManager.setUserName(claims.getName());
-            }
-            if (claims.getEmail() != null) {
-                logtoManager.setUserEmail(claims.getEmail());
+            try {
+                String userId = (String) claims.getClass().getMethod("getSub").invoke(claims);
+                logtoManager.setUserId(userId);
+                
+                try {
+                    String name = (String) claims.getClass().getMethod("getName").invoke(claims);
+                    if (name != null) {
+                        logtoManager.setUserName(name);
+                    }
+                } catch (Exception e) {
+                }
+                
+                try {
+                    String email = (String) claims.getClass().getMethod("getEmail").invoke(claims);
+                    if (email != null) {
+                        logtoManager.setUserEmail(email);
+                    }
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

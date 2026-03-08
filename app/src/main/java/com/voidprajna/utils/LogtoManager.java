@@ -2,10 +2,11 @@ package com.voidprajna.utils;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import io.logto.sdk.android.LogtoClient;
 import io.logto.sdk.android.type.LogtoConfig;
+
+import java.util.Collections;
 
 public class LogtoManager {
     private static final String LOGTO_ENDPOINT = "https://admin.voidprajna.qzz.io";
@@ -24,7 +25,7 @@ public class LogtoManager {
 
     private LogtoManager(Application application) {
         this.application = application;
-        this.preferences = PreferenceManager.getDefaultSharedPreferences(application);
+        this.preferences = application.getSharedPreferences("logto_prefs", MODE_PRIVATE);
         initLogtoClient();
     }
 
@@ -39,9 +40,10 @@ public class LogtoManager {
         LogtoConfig logtoConfig = new LogtoConfig(
                 LOGTO_ENDPOINT,
                 LOGTO_APP_ID,
-                null,
-                null,
-                true
+                Collections.emptyList(),
+                Collections.emptyList(),
+                true,
+                null
         );
         logtoClient = new LogtoClient(logtoConfig, application);
     }
