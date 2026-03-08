@@ -27,7 +27,6 @@ public class LogtoManager {
     private LogtoManager(Application application) {
         this.application = application;
         this.preferences = application.getSharedPreferences("logto_prefs", Context.MODE_PRIVATE);
-        initLogtoClient();
     }
 
     public static synchronized LogtoManager getInstance(Application application) {
@@ -35,6 +34,12 @@ public class LogtoManager {
             instance = new LogtoManager(application);
         }
         return instance;
+    }
+
+    private void ensureInitialized() {
+        if (logtoClient == null) {
+            initLogtoClient();
+        }
     }
 
     private void initLogtoClient() {
@@ -50,6 +55,7 @@ public class LogtoManager {
     }
 
     public LogtoClient getLogtoClient() {
+        ensureInitialized();
         return logtoClient;
     }
 
