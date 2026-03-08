@@ -1,6 +1,7 @@
 package com.voidprajna.utils;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import io.logto.sdk.android.LogtoClient;
@@ -25,7 +26,7 @@ public class LogtoManager {
 
     private LogtoManager(Application application) {
         this.application = application;
-        this.preferences = application.getSharedPreferences("logto_prefs", MODE_PRIVATE);
+        this.preferences = application.getSharedPreferences("logto_prefs", Context.MODE_PRIVATE);
         initLogtoClient();
     }
 
