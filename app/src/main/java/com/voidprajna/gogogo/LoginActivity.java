@@ -42,11 +42,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void checkLoginStatus() {
-        if (logtoManager.isLoggedIn()) {
-            goToMainActivity();
-        } else {
-            skipButton.setVisibility(View.VISIBLE);
-        }
+        goToMainActivity();
     }
 
     private void startLogin() {
