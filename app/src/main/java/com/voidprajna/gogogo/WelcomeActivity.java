@@ -87,9 +87,9 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             }
             isPermission = true;
-            // 权限授予后，如果已接受协议，直接跳转到登录页面
+            // 权限授予后，如果已接受协议，直接跳转到主页面
             if (mAgreement && mPrivacy) {
-                Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -144,7 +144,7 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         if (isPermission) {
-            Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+            Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
             startActivity(intent);
             WelcomeActivity.this.finish();
         } else {
@@ -282,9 +282,9 @@ public class WelcomeActivity extends AppCompatActivity {
         if (mPrivacy && mAgreement) {
             checkBox.setChecked(true);
             checkDefaultPermissions();
-            // 已接受协议，直接跳转到登录页面
+            // 已接受协议，直接跳转到主页面
             if (isPermission) {
-                Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }

@@ -109,18 +109,6 @@
             android:label="@string/app_history"
             android:exported="false" />
 
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="io.logto.android" android:host="com.voidprajna.gogogo" />
-            </intent-filter>
-        </activity>
-
     </application>
 
 </manifest>

@@ -137,10 +137,4 @@
     <string name="update_ignore">忽略一次</string>
     <string name="update_time">更新时间：</string>
     <string name="update_commit">提交信息：</string>
-
-    <!-- 登录 -->
-    <string name="login_button">登录</string>
-    <string name="skip_login">跳过登录</string>
-    <string name="login_failed">登录失败</string>
-    <string name="logout">退出登录</string>
 </resources>
