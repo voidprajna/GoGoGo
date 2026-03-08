@@ -15,6 +15,7 @@ import com.elvishew.xlog.printer.file.FilePrinter;
 import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy;
 import com.elvishew.xlog.printer.file.clean.FileLastModifiedCleanStrategy;
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator;
+import com.voidprajna.utils.LogtoManager;
 
 import java.io.File;
 
@@ -38,6 +39,8 @@ public class GoApplication extends Application {
         SDKInitializer.initialize(this);
 
         SDKInitializer.setCoordType(CoordType.BD09LL);
+
+        LogtoManager.getInstance(this);
     }
 
     /**
