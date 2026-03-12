@@ -400,19 +400,27 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
                     null, null, DataBaseHistoryLocation.DB_COLUMN_TIMESTAMP + " DESC", "1");
 
             if (cursor != null && cursor.moveToFirst()) {
-                String name = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LOCATION));
-                String bd09Longitude = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LONGITUDE_CUSTOM));
-                String bd09Latitude = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LATITUDE_CUSTOM));
-                
-                // 启用随机偏移
-                if(sharedPreferences.getBoolean("setting_random_offset", false)) {
-                    String[] offsetResult = randomOffset(bd09Longitude, bd09Latitude);
-                    bd09Longitude = offsetResult[0];
-                    bd09Latitude = offsetResult[1];
+                int nameIndex = cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LOCATION);
+                int longitudeIndex = cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LONGITUDE_CUSTOM);
+                int latitudeIndex = cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LATITUDE_CUSTOM);
+
+                if (nameIndex >= 0 && longitudeIndex >= 0 && latitudeIndex >= 0) {
+                    String name = cursor.getString(nameIndex);
+                    String bd09Longitude = cursor.getString(longitudeIndex);
+                    String bd09Latitude = cursor.getString(latitudeIndex);
+                    
+                    // 启用随机偏移
+                    if(sharedPreferences.getBoolean("setting_random_offset", false)) {
+                        String[] offsetResult = randomOffset(bd09Longitude, bd09Latitude);
+                        bd09Longitude = offsetResult[0];
+                        bd09Latitude = offsetResult[1];
+                    }
+                    
+                    showLocation(name, bd09Longitude, bd09Latitude);
+                    GoUtils.DisplayToast(this, "已跳转到上次位置: " + name);
+                } else {
+                    GoUtils.DisplayToast(this, getResources().getString(R.string.history_idle));
                 }
-                
-                showLocation(name, bd09Longitude, bd09Latitude);
-                GoUtils.DisplayToast(this, "已跳转到上次位置: " + name);
                 cursor.close();
             } else {
                 GoUtils.DisplayToast(this, getResources().getString(R.string.history_idle));
