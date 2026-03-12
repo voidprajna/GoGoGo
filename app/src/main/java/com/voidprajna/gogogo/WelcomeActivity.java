@@ -26,10 +26,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.voidprajna.utils.GoUtils;
+import com.voidprajna.utils.NetworkUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class WelcomeActivity extends AppCompatActivity {
+    // 替换为您的 PocketBase 地址，请确保 devices 集合的 List/Search 权限已设为 Public
+    private static final String AUTH_SERVER_URL = "http://pocketbase.voidprajna.qzz.io/api/collections/devices/records";
+
     private static SharedPreferences preferences;
     private static final String PREFS_NAME = "KEY_ACCEPT_AGREEMENT";
     private static final String KEY_ACCEPT_POLICY = "KEY_ACCEPT_POLICY";
@@ -88,6 +95,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             }
             isPermission = true;
+            checkUserAuthorization();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -139,12 +147,66 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         if (isPermission) {
-            Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-            startActivity(intent);
-            WelcomeActivity.this.finish();
+            checkUserAuthorization();
         } else {
             checkDefaultPermissions();
         }
+    }
+
+    private void checkUserAuthorization() {
+        String deviceId = GoUtils.getDeviceId(this);
+        // PocketBase 过滤语法：filter=(device_id='xxxx')
+        String url = AUTH_SERVER_URL + "?filter=(device_id='" + deviceId + "')";
+
+        NetworkUtils.get(url, new NetworkUtils.Callback() {
+            @Override
+            public void onSuccess(String response) {
+                try {
+                    JSONObject json = new JSONObject(response);
+                    JSONArray items = json.getJSONArray("items");
+
+                    if (items.length() > 0) {
+                        JSONObject deviceRecord = items.getJSONObject(0);
+                        boolean isActive = deviceRecord.optBoolean("is_active", false);
+
+                        if (isActive) {
+                            // 授权通过
+                            Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            WelcomeActivity.this.finish();
+                        } else {
+                            // 设备存在但未激活
+                            showAuthErrorDialog(deviceId, "该设备授权已过期或被禁用，请联系管理员。");
+                        }
+                    } else {
+                        // 设备未在数据库中
+                        showAuthErrorDialog(deviceId, "该设备尚未获得授权，请联系管理员。");
+                    }
+                } catch (Exception e) {
+                    onFailure(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                new AlertDialog.Builder(WelcomeActivity.this)
+                        .setTitle("网络异常")
+                        .setMessage("无法连接到授权服务器，请检查网络设置。")
+                        .setPositiveButton("重试", (dialog, which) -> checkUserAuthorization())
+                        .setNegativeButton("退出", (dialog, which) -> finish())
+                        .setCancelable(false)
+                        .show();
+            }
+        });
+    }
+
+    private void showAuthErrorDialog(String deviceId, String message) {
+        new AlertDialog.Builder(WelcomeActivity.this)
+                .setTitle("授权提示")
+                .setMessage(message + "\n\n设备ID: " + deviceId)
+                .setPositiveButton("退出", (dialog, which) -> finish())
+                .setCancelable(false)
+                .show();
     }
 
     private void doAcceptation() {

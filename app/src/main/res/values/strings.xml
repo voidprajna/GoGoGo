@@ -129,4 +129,5 @@
     <string name="update_ignore">忽略一次</string>
     <string name="update_time">更新时间：</string>
     <string name="update_commit">提交信息：</string>
+    <string name="app_menu_last_location">跳转到上次位置</string>
 </resources>

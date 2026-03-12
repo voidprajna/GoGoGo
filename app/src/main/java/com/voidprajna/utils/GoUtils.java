@@ -277,10 +277,19 @@ public class GoUtils {
                 .show();
     }
 
-    public static  void DisplayToast(Context context, String str) {
+    public static void DisplayToast(Context context, String str) {
         Toast toast = Toast.makeText(context, str, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.TOP, 0, 100);
         toast.show();
+    }
+
+    /**
+     * 获取设备唯一ID (Android ID)
+     * 注意：在 Android 8.0+，不同签名的 App 获取到的 ID 不同
+     */
+    @SuppressLint("HardwareIds")
+    public static String getDeviceId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     /* 计数器类 */

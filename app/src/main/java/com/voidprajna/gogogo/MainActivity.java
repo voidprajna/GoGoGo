@@ -384,6 +384,38 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_last_location) {
+            jumpToLastLocation();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void jumpToLastLocation() {
+        try {
+            Cursor cursor = mLocationHistoryDB.query(DataBaseHistoryLocation.TABLE_NAME, null,
+                    null, null,
+                    null, null, DataBaseHistoryLocation.DB_COLUMN_TIMESTAMP + " DESC", "1");
+
+            if (cursor != null && cursor.moveToFirst()) {
+                String name = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LOCATION));
+                String bd09Longitude = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LONGITUDE_CUSTOM));
+                String bd09Latitude = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LATITUDE_CUSTOM));
+                
+                showLocation(name, bd09Longitude, bd09Latitude);
+                GoUtils.DisplayToast(this, "已跳转到上次位置: " + name);
+                cursor.close();
+            } else {
+                GoUtils.DisplayToast(this, getResources().getString(R.string.history_idle));
+            }
+        } catch (Exception e) {
+            XLog.e("ERROR - jumpToLastLocation: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             mAccValues = sensorEvent.values;
@@ -436,7 +468,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
                 File file = new File(getExternalFilesDir("Logs"), GoApplication.LOG_FILE_NAME);
                 ShareUtils.shareFile(this, file, item.getTitle().toString());
             } else if (id == R.id.nav_contact) {
-                Uri uri = Uri.parse("https://gitee.com/itexp/gogogo/issues");
+                Uri uri = Uri.parse("https://www.voidprajna.de5.net");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }

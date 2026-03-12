@@ -53,7 +53,7 @@
             app:key="setting_random_offset"
             app:title="@string/setting_random_offset"
             app:summary="@string/setting_random_offset_summary"
-            app:defaultValue="false"
+            app:defaultValue="true"
             app:iconSpaceReserved="false"/>
         <EditTextPreference
             app:key="setting_lat_max_offset"
