@@ -422,6 +422,25 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
         }
     }
 
+    private String[] randomOffset(String longitude, String latitude) {
+        String max_offset_default = getResources().getString(R.string.setting_random_offset_default);
+        double lon_max_offset = Double.parseDouble(sharedPreferences.getString("setting_lon_max_offset", max_offset_default));
+        double lat_max_offset = Double.parseDouble(sharedPreferences.getString("setting_lat_max_offset", max_offset_default));
+        double lon = Double.parseDouble(longitude);
+        double lat = Double.parseDouble(latitude);
+
+        double randomLonOffset = (Math.random() * 2 - 1) * lon_max_offset;  // Longitude offset (meters)
+        double randomLatOffset = (Math.random() * 2 - 1) * lat_max_offset;  // Latitude offset (meters)
+
+        lon += randomLonOffset / 111320;    // (meters -> longitude)
+        lat += randomLatOffset / 110574;    // (meters -> latitude)
+
+        String offsetMessage = String.format(java.util.Locale.US, "经度偏移: %.2f米\n纬度偏移: %.2f米", randomLonOffset, randomLatOffset);
+        GoUtils.DisplayToast(this, offsetMessage);
+
+        return new String[]{String.valueOf(lon), String.valueOf(lat)};
+    }
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
