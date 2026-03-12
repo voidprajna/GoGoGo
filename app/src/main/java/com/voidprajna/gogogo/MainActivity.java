@@ -404,6 +404,13 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
                 String bd09Longitude = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LONGITUDE_CUSTOM));
                 String bd09Latitude = cursor.getString(cursor.getColumnIndex(DataBaseHistoryLocation.DB_COLUMN_LATITUDE_CUSTOM));
                 
+                // 启用随机偏移
+                if(sharedPreferences.getBoolean("setting_random_offset", false)) {
+                    String[] offsetResult = randomOffset(bd09Longitude, bd09Latitude);
+                    bd09Longitude = offsetResult[0];
+                    bd09Latitude = offsetResult[1];
+                }
+                
                 showLocation(name, bd09Longitude, bd09Latitude);
                 GoUtils.DisplayToast(this, "已跳转到上次位置: " + name);
                 cursor.close();
