@@ -35,7 +35,7 @@ import java.util.ArrayList;
 
 public class WelcomeActivity extends AppCompatActivity {
     // 替换为您的 PocketBase 地址，请确保 devices 集合的 List/Search 权限已设为 Public
-    private static final String AUTH_SERVER_URL = "http://pocketbase.voidprajna.qzz.io/api/collections/devices/records";
+    private static final String AUTH_SERVER_URL = "http://103.52.152.61:8099//api/collections/devices/records";
 
     private static SharedPreferences preferences;
     private static final String PREFS_NAME = "KEY_ACCEPT_AGREEMENT";
