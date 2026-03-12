@@ -457,7 +457,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
         lon += randomLonOffset / 111320;    // (meters -> longitude)
         lat += randomLatOffset / 110574;    // (meters -> latitude)
 
-        // String offsetMessage = String.format(java.util.Locale.US, "经度偏移: %.2f米\n纬度偏移: %.2f米", randomLonOffset, randomLatOffset);
+        String offsetMessage = String.format(java.util.Locale.US, "经度偏移: %.2f米\n纬度偏移: %.2f米", randomLonOffset, randomLatOffset);
         GoUtils.DisplayToast(this, offsetMessage);
 
         return new String[]{String.valueOf(lon), String.valueOf(lat)};
