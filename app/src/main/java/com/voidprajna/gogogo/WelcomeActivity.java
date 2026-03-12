@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class WelcomeActivity extends AppCompatActivity {
-    // 替换为您的 PocketBase 地址，请确保 devices 集合的 List/Search 权限已设为 Public
     private static final String AUTH_SERVER_URL = BuildConfig.AUTH_SERVER_URL;
     private static SharedPreferences preferences;
     private static final String PREFS_NAME = "KEY_ACCEPT_AGREEMENT";
@@ -124,6 +123,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         if (ReqPermissions.isEmpty()) {
             isPermission = true;
+            // 权限已全部授予，自动进行用户授权检查
+            checkUserAuthorization();
         } else {
             requestPermissions(ReqPermissions.toArray(new String[0]), SDK_PERMISSION_REQUEST);
         }
