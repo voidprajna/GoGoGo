@@ -35,6 +35,7 @@ jobs:
           cat << EOF > local.properties
           MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}
           MAPS_SAFE_CODE=${{ secrets.MAPS_SAFE_CODE }}
+          AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
           EOF
 
       - name: Build APK

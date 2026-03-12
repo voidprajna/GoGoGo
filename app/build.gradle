@@ -39,6 +39,14 @@ android {
             abiFilters "arm64-v8a"
         }
         signingConfig = signingConfigs.release
+        
+        // 读取 local.properties 中的环境变量
+        Properties properties = new Properties()
+        if (project.rootProject.file('local.properties').exists()) {
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        }
+        buildConfigField "String", "AUTH_SERVER_URL", 
+            "\"${properties.getProperty('AUTH_SERVER_URL', 'http://localhost:8099/api/collections/devices/records')}\""
     }
 
     buildTypes {
