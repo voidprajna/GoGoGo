@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="10dp"
-        android:text="@string/app_agreement"
+        android:text="@string/app_agreement_privacy_title"
         android:textColor="#282828"
         android:textSize="20sp"
         android:textStyle="bold" />
