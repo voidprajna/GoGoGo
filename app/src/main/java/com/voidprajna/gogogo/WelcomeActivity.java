@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
@@ -49,6 +50,9 @@ public class WelcomeActivity extends AppCompatActivity {
     private int retryCount = 0;
     private static final int MAX_RETRY_COUNT = 3;
     private static final int RETRY_DELAY_MS = 1000; // 1秒延迟
+
+    private CheckBox checkBox;
+    private Boolean mPolicyAccepted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +137,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void startMainActivity() {
-        if (!checkBox.isChecked()) {
+        if (checkBox == null || !checkBox.isChecked()) {
             GoUtils.DisplayToast(this, getResources().getString(R.string.app_error_agreement));
             return;
         }
@@ -199,7 +203,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 if (retryCount < MAX_RETRY_COUNT) {
                     retryCount++;
                     // 延迟重试
-                    new Handler().postDelayed(() -> performAuthorizationCheck(), RETRY_DELAY_MS);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> performAuthorizationCheck(), RETRY_DELAY_MS);
                 } else {
                     // 重试次数用完，弹出对话框
                     new AlertDialog.Builder(WelcomeActivity.this)
