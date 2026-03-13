@@ -411,13 +411,13 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
                     
                     // 启用随机偏移
                     if(sharedPreferences.getBoolean("setting_random_offset", false)) {
-                        String[] offsetResult = randomOffset(bd09Longitude, bd09Latitude);
+                        String[] offsetResult = randomOffset(name, bd09Longitude, bd09Latitude);
                         bd09Longitude = offsetResult[0];
                         bd09Latitude = offsetResult[1];
                     }
                     
                     showLocation(name, bd09Longitude, bd09Latitude);
-                    GoUtils.DisplayToast(this, "已跳转到上次位置: " + name);
+                    // GoUtils.DisplayToast(this, "已跳转到上次位置: " + name);
                 } else {
                     GoUtils.DisplayToast(this, getResources().getString(R.string.history_idle));
                 }
@@ -430,7 +430,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
         }
     }
 
-    private String[] randomOffset(String longitude, String latitude) {
+    private String[] randomOffset(String name, String longitude, String latitude) {
         String max_offset_default = getResources().getString(R.string.setting_random_offset_default);
         double lon_max_offset = Double.parseDouble(sharedPreferences.getString("setting_lon_max_offset", max_offset_default));
         double lat_max_offset = Double.parseDouble(sharedPreferences.getString("setting_lat_max_offset", max_offset_default));
@@ -444,7 +444,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
         lon += randomLonOffset / 111320;    // (meters -> longitude)
         lat += randomLatOffset / 110574;    // (meters -> latitude)
 
-        String offsetMessage = String.format(java.util.Locale.US, "经度偏移: %.2f米\n纬度偏移: %.2f米", randomLonOffset, randomLatOffset);
+        String offsetMessage = String.format(java.util.Locale.US, "已跳转到上次位置: %s\n经度偏移: %.2f米\n纬度偏移: %.2f米", name, randomLonOffset, randomLatOffset);
         GoUtils.DisplayToast(this, offsetMessage);
 
         return new String[]{String.valueOf(lon), String.valueOf(lat)};
