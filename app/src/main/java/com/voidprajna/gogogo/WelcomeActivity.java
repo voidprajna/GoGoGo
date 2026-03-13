@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
@@ -45,8 +46,9 @@ public class WelcomeActivity extends AppCompatActivity {
     private static final int SDK_PERMISSION_REQUEST = 127;
     private static final ArrayList<String> ReqPermissions = new ArrayList<>();
 
-    private CheckBox checkBox;
-    private Boolean mPolicyAccepted;
+    private int retryCount = 0;
+    private static final int MAX_RETRY_COUNT = 3;
+    private static final int RETRY_DELAY_MS = 1000; // 1秒延迟
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +156,11 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void checkUserAuthorization() {
+        retryCount = 0; // 重置重试计数
+        performAuthorizationCheck();
+    }
+
+    private void performAuthorizationCheck() {
         String deviceId = GoUtils.getDeviceId(this);
         // PocketBase 过滤语法：filter=(device_id='xxxx')
         String url = AUTH_SERVER_URL + "?filter=(device_id='" + deviceId + "')";
@@ -189,13 +196,23 @@ public class WelcomeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                new AlertDialog.Builder(WelcomeActivity.this)
-                        .setTitle("网络异常")
-                        .setMessage("无法连接到授权服务器，请检查网络设置。")
-                        .setPositiveButton("重试", (dialog, which) -> checkUserAuthorization())
-                        .setNegativeButton("退出", (dialog, which) -> finish())
-                        .setCancelable(false)
-                        .show();
+                if (retryCount < MAX_RETRY_COUNT) {
+                    retryCount++;
+                    // 延迟重试
+                    new Handler().postDelayed(() -> performAuthorizationCheck(), RETRY_DELAY_MS);
+                } else {
+                    // 重试次数用完，弹出对话框
+                    new AlertDialog.Builder(WelcomeActivity.this)
+                            .setTitle("网络异常")
+                            .setMessage("无法连接到授权服务器，请检查网络设置。")
+                            .setPositiveButton("重试", (dialog, which) -> {
+                                retryCount = 0; // 重置计数
+                                checkUserAuthorization();
+                            })
+                            .setNegativeButton("退出", (dialog, which) -> finish())
+                            .setCancelable(false)
+                            .show();
+                }
             }
         });
     }

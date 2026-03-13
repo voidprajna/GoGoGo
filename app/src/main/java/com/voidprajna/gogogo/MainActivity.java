@@ -437,22 +437,9 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
         double lon = Double.parseDouble(longitude);
         double lat = Double.parseDouble(latitude);
 
-        // 原代码：
-        // double randomLonOffset = (Math.random() * 2 - 1) * lon_max_offset;  // Longitude offset (meters)
-        // double randomLatOffset = (Math.random() * 2 - 1) * lat_max_offset;  // Latitude offset (meters)
-
-        // 【新代码】生成 10~20 之间的随机数，并随机赋予正负号
-        double baseMin = 10.0;
-        double baseMax = 20.0;
-        double range = baseMax - baseMin; // 10.0
-
-        // 生成 10.0 到 20.0 的随机数
-        double randomDistLon = Math.random() * range + baseMin;
-        double randomDistLat = Math.random() * range + baseMin;
-
-        // 随机决定方向 (正或负)
-        double randomLonOffset = (Math.random() > 0.5 ? 1 : -1) * randomDistLon;
-        double randomLatOffset = (Math.random() > 0.5 ? 1 : -1) * randomDistLat;
+        // 生成随机偏移
+        double randomLonOffset = (Math.random() * 2 - 1) * lon_max_offset;  // Longitude offset (meters)
+        double randomLatOffset = (Math.random() * 2 - 1) * lat_max_offset;  // Latitude offset (meters)
 
         lon += randomLonOffset / 111320;    // (meters -> longitude)
         lat += randomLatOffset / 110574;    // (meters -> latitude)
