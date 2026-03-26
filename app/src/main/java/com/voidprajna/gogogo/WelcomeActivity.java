@@ -164,9 +164,65 @@ public class WelcomeActivity extends AppCompatActivity {
         performAuthorizationCheck();
     }
 
+    // private void performAuthorizationCheck() {
+    //     String deviceId = GoUtils.getDeviceId(this);
+    //     // PocketBase 过滤语法：filter=(device_id='xxxx')
+    //     String url = AUTH_SERVER_URL + "?filter=(device_id='" + deviceId + "')";
+
+    //     NetworkUtils.get(url, new NetworkUtils.Callback() {
+    //         @Override
+    //         public void onSuccess(String response) {
+    //             try {
+    //                 JSONObject json = new JSONObject(response);
+    //                 JSONArray items = json.getJSONArray("items");
+
+    //                 if (items.length() > 0) {
+    //                     JSONObject deviceRecord = items.getJSONObject(0);
+    //                     boolean isActive = deviceRecord.optBoolean("is_active", false);
+
+    //                     if (isActive) {
+    //                         // 授权通过
+    //                         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+    //                         startActivity(intent);
+    //                         WelcomeActivity.this.finish();
+    //                     } else {
+    //                         // 设备存在但未激活
+    //                         showAuthErrorDialog(deviceId, "该设备授权已过期或被禁用，请联系管理员。");
+    //                     }
+    //                 } else {
+    //                     // 设备未在数据库中
+    //                     showAuthErrorDialog(deviceId, "该设备尚未获得授权，请联系管理员。");
+    //                 }
+    //             } catch (Exception e) {
+    //                 onFailure(e);
+    //             }
+    //         }
+
+    //         @Override
+    //         public void onFailure(Exception e) {
+    //             if (retryCount < MAX_RETRY_COUNT) {
+    //                 retryCount++;
+    //                 // 延迟重试
+    //                 new Handler(Looper.getMainLooper()).postDelayed(() -> performAuthorizationCheck(), RETRY_DELAY_MS);
+    //             } else {
+    //                 // 重试次数用完，弹出对话框
+    //                 new AlertDialog.Builder(WelcomeActivity.this)
+    //                         .setTitle("网络异常")
+    //                         .setMessage("无法连接到授权服务器，请检查网络设置。")
+    //                         .setPositiveButton("重试", (dialog, which) -> {
+    //                             retryCount = 0; // 重置计数
+    //                             checkUserAuthorization();
+    //                         })
+    //                         .setNegativeButton("退出", (dialog, which) -> finish())
+    //                         .setCancelable(false)
+    //                         .show();
+    //             }
+    //         }
+    //     });
+    // }
+
     private void performAuthorizationCheck() {
         String deviceId = GoUtils.getDeviceId(this);
-        // PocketBase 过滤语法：filter=(device_id='xxxx')
         String url = AUTH_SERVER_URL + "?filter=(device_id='" + deviceId + "')";
 
         NetworkUtils.get(url, new NetworkUtils.Callback() {
@@ -178,20 +234,17 @@ public class WelcomeActivity extends AppCompatActivity {
 
                     if (items.length() > 0) {
                         JSONObject deviceRecord = items.getJSONObject(0);
-                        boolean isActive = deviceRecord.optBoolean("is_active", false);
-
-                        if (isActive) {
-                            // 授权通过
+                        if (deviceRecord.optBoolean("is_active", false)) {
                             Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                             startActivity(intent);
                             WelcomeActivity.this.finish();
                         } else {
-                            // 设备存在但未激活
-                            showAuthErrorDialog(deviceId, "该设备授权已过期或被禁用，请联系管理员。");
+                            // 设备存在但未激活，获取配置并提示
+                            fetchConfigAndShowError(deviceId, "该设备授权已过期或被禁用。");
                         }
                     } else {
-                        // 设备未在数据库中
-                        showAuthErrorDialog(deviceId, "该设备尚未获得授权，请联系管理员。");
+                        // 设备未在数据库中，获取配置并提示
+                        fetchConfigAndShowError(deviceId, "该设备尚未获得授权。");
                     }
                 } catch (Exception e) {
                     onFailure(e);
@@ -221,13 +274,52 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
+    // 新增：专门获取公告和联系方式的方法
+    private void fetchConfigAndShowError(String deviceId, String reason) {
+        String configUrl = AUTH_SERVER_URL.substring(0, AUTH_SERVER_URL.lastIndexOf("/devices/")) + "/config/records";
+
+        NetworkUtils.get(configUrl, new NetworkUtils.Callback() {
+            @Override
+            public void onSuccess(String response) {
+                try {
+                    String contact = "请联系管理员";
+                    String announcement = "请联系管理员获取授权。";
+                    
+                    JSONArray items = new JSONObject(response).getJSONArray("items");
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject obj = items.getJSONObject(i);
+                        String key = obj.optString("key");
+                        String val = obj.optString("item"); // 对应你数据库里的 item 字段
+                        if ("admin_contact".equals(key)) contact = val;
+                        if ("announcement".equals(key)) announcement = val;
+                    }
+                    
+                    String finalMsg = reason + "\n\n公告：" + announcement + "\n客服微信号：" + contact;
+                    runOnUiThread(() -> showAuthErrorDialog(deviceId, finalMsg));
+                } catch (Exception e) {
+                    runOnUiThread(() -> showAuthErrorDialog(deviceId, reason + " (无法获取联系方式)"));
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(() -> showAuthErrorDialog(deviceId, reason));
+            }
+        });
+    }
+
     private void showAuthErrorDialog(String deviceId, String message) {
-        new AlertDialog.Builder(WelcomeActivity.this)
-                .setTitle("授权提示")
-                .setMessage(message + "\n\n设备ID: " + deviceId)
-                .setPositiveButton("退出", (dialog, which) -> finish())
-                .setCancelable(false)
-                .show();
+        // 如果 message 里包含微信号，用户其实很想复制它
+        new AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage(message)
+            .setPositiveButton("复制联系方式", (dialog, which) -> {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboard.setPrimaryClip(ClipData.newPlainText("wechat", "这里填微信号"));
+                Toast.makeText(this, "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("退出", (dialog, which) -> finish())
+            .show();
     }
 
     private void doAcceptation() {
